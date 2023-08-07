@@ -1,15 +1,16 @@
-name: ShellCheck
+name: Shell Check
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'master'
     paths:
       - '.github/workflows/shellcheck.yml'
       - '**/*.sh'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
     paths:
       - '.github/workflows/shellcheck.yml'
       - '**/*.sh'

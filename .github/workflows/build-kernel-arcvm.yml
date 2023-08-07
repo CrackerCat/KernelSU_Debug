@@ -1,16 +1,22 @@
 name: Build Kernel - ChromeOS ARCVM
+
 on:
   push:
-    branches: ["main"]
+    branches: [ "master" ]
     paths:
       - ".github/workflows/build-kernel-arcvm.yml"
       - "kernel/**"
   pull_request:
-    branches: ["main"]
+    branches: [ "master" ]
     paths:
       - ".github/workflows/build-kernel-arcvm.yml"
       - "kernel/**"
   workflow_call:
+    inputs:
+      debug:
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
 
 jobs:
@@ -23,14 +29,12 @@ jobs:
           - arch: x86_64
             git_tag: chromeos-5.10-arcvm
             file_name: "bzImage"
-
     name: Build ChromeOS ARCVM kernel
     runs-on: ubuntu-20.04
     env:
       LTO: thin
       ROOT_DIR: /
       KERNEL_DIR: ${{ github.workspace }}/kernel
-
     steps:
       - name: Install Build Tools
         run: |
@@ -68,6 +72,8 @@ jobs:
         run: git clone https://chromium.googlesource.com/chromiumos/third_party/kernel.git -b ${{ matrix.git_tag }} --depth=1
 
       - name: Setup KernelSU
+        env:
+          IS_DEBUG_KERNEL: ${{ inputs.debug }}
         working-directory: kernel
         run: |
           echo "[+] KernelSU setup"
@@ -85,6 +91,11 @@ jobs:
 
           echo "[+] Patch script/setlocalversion"
           sed -i 's/-dirty//g' $KERNEL_ROOT/scripts/setlocalversion
+          
+          if [ "$IS_DEBUG_KERNEL" = "true" ]; then
+            echo "[+] Enable debug features for kernel"
+            echo "ccflags-y += -DCONFIG_KSU_DEBUG" >> $GITHUB_WORKSPACE/KernelSU/kernel/Makefile
+          fi
 
           echo "[+] KernelSU setup done."
           cd $GITHUB_WORKSPACE/KernelSU
@@ -114,27 +125,3 @@ jobs:
         with:
           name: kernel-ARCVM-${{ matrix.arch }}-${{ matrix.version }}
           path: "${{ env.file_path }}"
-
-      - name: Post to Telegram
-        if: ${{ ( github.event_name == 'push' && github.ref == 'refs/heads/main' ) || github.ref_type == 'tag' }}
-        env:
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-          CACHE_CHAT_ID: ${{ secrets.CACHE_CHAT_ID }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          MESSAGE_THREAD_ID: ${{ secrets.MESSAGE_THREAD_ID }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_URL: ${{ github.event.head_commit.url }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          TITLE=kernel-ARCVM-${{ matrix.arch }}-${{ matrix.version }}
-          echo "[+] title: $TITLE"
-          export TITLE
-          export VERSION="${{ env.kernelsu_version }}"
-          echo "[+] Compress images"
-          gzip -n -f -9 "${{ env.file_path }}"
-          echo "[+] Image to upload"
-          ls -l "${{ env.file_path }}.gz"
-          if [ -n "${{ secrets.BOT_TOKEN }}" ]; then
-            pip3 install python-telegram-bot
-            python3 "$GITHUB_WORKSPACE/KernelSU/scripts/ksubot.py" "${{ env.file_path }}.gz"
-          fi

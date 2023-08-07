@@ -1,14 +1,15 @@
 name: Build Manager
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths:
       - '.github/workflows/build-manager.yml'
       - 'manager/**'
       - 'userspace/ksud/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths:
       - 'manager/**'
   workflow_call:
@@ -23,14 +24,12 @@ jobs:
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
-
   build-manager:
     needs: build-ksud
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./manager
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,7 +46,7 @@ jobs:
           fi
 
       - name: Write key
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/main' ) || github.ref_type == 'tag' }}
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             echo KEYSTORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}' >> gradle.properties
@@ -82,10 +81,10 @@ jobs:
 
       - name: Copy ksud to app jniLibs
         run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/x86_64
-          cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud.so
-          cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud.so
+          mkdir -p app/src/master/jniLibs/arm64-v8a
+          mkdir -p app/src/master/jniLibs/x86_64
+          cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/master/jniLibs/arm64-v8a/libksud.so
+          cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/master/jniLibs/x86_64/libksud.so
 
       - name: Build with Gradle
         run: |

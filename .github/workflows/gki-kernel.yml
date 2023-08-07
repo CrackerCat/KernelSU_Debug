@@ -158,7 +158,7 @@ jobs:
           mkdir output
           cp $OUTDIR/Image ./output/
           cp $OUTDIR/Image.lz4 ./output/
-          git clone https://github.com/Kernel-SU/AnyKernel3
+          git clone https://github.com/MlgmXyysd/AnyKernel3-KSU AnyKernel3
           rm -rf ./AnyKernel3/.git
           cp $OUTDIR/Image ./AnyKernel3/
 

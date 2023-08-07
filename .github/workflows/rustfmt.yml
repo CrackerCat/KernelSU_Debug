@@ -1,15 +1,16 @@
-name: Rustfmt check
+name: Rustfmt Check
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'master'
     paths:
       - '.github/workflows/rustfmt.yml'
       - 'userspace/ksud/**'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
     paths:
       - '.github/workflows/rustfmt.yml'
       - 'userspace/ksud/**'

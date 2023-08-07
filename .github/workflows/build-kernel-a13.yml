@@ -1,20 +1,23 @@
 name: Build Kernel - Android 13
+
 on:
+  workflow_dispatch:
   push:
-    branches: ["main", "ci"]
+    branches: [ "master" ]
     paths:
       - ".github/workflows/build-kernel-a13.yml"
       - ".github/workflows/gki-kernel.yml"
       - ".github/scripts/build_a13.sh"
       - "kernel/**"
   pull_request:
-    branches: ["main"]
+    branches: [ "master" ]
     paths:
       - ".github/workflows/build-kernel-a13.yml"
       - ".github/workflows/gki-kernel.yml"
       - ".github/scripts/build-a13.sh"
       - "kernel/**"
   workflow_call:
+
 jobs:
   build-kernel:
     if: github.event_name != 'pull_request'
@@ -59,10 +62,11 @@ jobs:
       tag: android13-${{ matrix.version }}-${{ matrix.os_patch_level }}
       os_patch_level: ${{ matrix.os_patch_level }}
       patch_path: ${{ matrix.version }}
+
   upload-artifacts:
     needs: build-kernel
     runs-on: ubuntu-latest
-    if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/main' ) || github.ref_type == 'tag' || github.ref == 'refs/heads/ci' }}
+    if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' || github.ref == 'refs/heads/ci' }}
     env:
       CHAT_ID: ${{ secrets.CHAT_ID }}
       CACHE_CHAT_ID: ${{ secrets.CACHE_CHAT_ID }}

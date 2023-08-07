@@ -1,17 +1,20 @@
 name: Build KSUD
+
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main", "ci" ]
+    branches: [ "master" ]
     paths: 
       - '.github/workflows/build-ksud.yml'
       - '.github/workflows/ksud.yml'
       - 'userspace/ksud/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths: 
       - '.github/workflows/build-ksud.yml'
       - '.github/workflows/ksud.yml'
       - 'userspace/ksud/**'
+
 jobs:
   build:
     strategy:

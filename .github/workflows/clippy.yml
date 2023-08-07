@@ -1,15 +1,16 @@
 name: Clippy check
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
+      - master
     paths:
       - '.github/workflows/clippy.yml'
       - 'userspace/ksud/**'
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - '.github/workflows/clippy.yml'
       - 'userspace/ksud/**'
