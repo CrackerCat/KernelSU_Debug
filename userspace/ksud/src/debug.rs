@@ -49,11 +49,6 @@ fn get_apk_path(package_name: &str) -> Result<String> {
 }
 
 pub fn set_manager(pkg: &str) -> Result<()> {
-    ensure!(
-        Path::new(KERNEL_PARAM_PATH).exists(),
-        "CONFIG_KSU_DEBUG is not enabled"
-    );
-
     let path = get_apk_path(pkg).with_context(|| format!("{pkg} does not exist!"))?;
     let sign = get_apk_signature(&path)?;
     set_kernel_param(sign.0, sign.1)?;
