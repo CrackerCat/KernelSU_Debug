@@ -89,37 +89,19 @@ jobs:
       - name: Build with Gradle
         run: |
           echo 'org.gradle.parallel=true' >> gradle.properties
-          echo 'org.gradle.vfs.watch=true' >> gradle.properties
           echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
           echo 'android.native.buildOutput=verbose' >> gradle.properties
           sed -i 's/org.gradle.configuration-cache=true//g' gradle.properties
-          ./gradlew clean assembleRelease
+          ./gradlew clean assembleRelease assembleDebug
 
-      - name: Upload build artifact
+      - name: Upload build artifact - Release
         uses: actions/upload-artifact@v3
         with:
-          name: manager
+          name: manager-release
           path: manager/app/build/outputs/apk/release/*.apk
 
-      - name: Setup mutex for uploading
-        uses: ben-z/gh-action-mutex@v1.0-alpha-7
-        if: github.event_name != 'pull_request' && steps.need_upload.outputs.UPLOAD == 'true'
-
-      - name: Upload to telegram
-        if: github.event_name != 'pull_request' && steps.need_upload.outputs.UPLOAD == 'true'
-        env:
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-          CACHE_CHAT_ID: ${{ secrets.CACHE_CHAT_ID }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          MESSAGE_THREAD_ID: ${{ secrets.MESSAGE_THREAD_ID }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_URL: ${{ github.event.head_commit.url }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TITLE: Manager
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            export VERSION=$(git rev-list --count HEAD)
-            APK=$(find ./app/build/outputs/apk/release -name "*.apk")
-            pip3 install python-telegram-bot
-            python3 $GITHUB_WORKSPACE/scripts/ksubot.py $APK
-          fi
+      - name: Upload build artifact - Debug
+        uses: actions/upload-artifact@v3
+        with:
+          name: manager-debug
+          path: manager/app/build/outputs/apk/debug/*.apk

@@ -9,10 +9,12 @@ A Kernel based root solution for Android devices. Modified for debugging.
 1. Kernel-based `su` and root access management.
 2. ~Module system based on overlayfs.~ (Remove soon)
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
-4. <Modify> Remove the unnecessary manager signature validation, only keep package name validation as basic security. Now you can modify the manager as much as you want.
-5. <Modify> Always allow adb shell root.
-6. <Modify> Set SELinux Permissive by default for **highest privileges**.
-7. <Modify> Allow all APPs root, only available on Debug variant.
+
+
+4. Remove the unnecessary manager signature validation, only keep package name validation as basic security. Now you can modify the manager as much as you want.
+5. Always allow adb shell root.
+6. Set SELinux Permissive by default for **highest privileges**.
+7. Allow all APPs root, only available on Debug variant.
 
 ## Compatibility State
 
@@ -22,12 +24,17 @@ WSA, ChromeOS and containter-based Android can also work with KernelSU integrate
 
 And the current supported ABIs are : `arm64-v8a` and `x86_64`
 
+## Discussion
+
+- Telegram: [@MlgmXyysd_bibilailai](https://t.me/MlgmXyysd_bibilailai) (Channel Discussion Group)
+
 ## To-Dos
 
 - Drop redundant modules feature
 - Root access authorization dialog
 - Install KernelSU as kernel module
 - Allow modify manager package name in manager
+- Allow enable SELinux Enforcing in manager
 
 ## Workaround
 
@@ -40,7 +47,7 @@ And the current supported ABIs are : `arm64-v8a` and `x86_64`
 - KernelSU does not provide a dialog for authorization, which is annoying. Allow adb shell root by default preserves both relative application security and the convenience of terminal debugging. Similarly, root privileges are provided for all applications by default for debugging purposes only, but are provided separately for Debug variant due to security risks.
 
 
-- If you believe that the above features undermine the security of a device that has been flashed with custom firmware, please review the BootLoader's unlock warning first:
+	If you believe that the above features undermine the security of a device that has been flashed with custom firmware, please review the BootLoader's unlock warning first:
 
 > <!>
 > 
@@ -58,6 +65,7 @@ And the current supported ABIs are : `arm64-v8a` and `x86_64`
 > UNLOCK THE BOOTLOADER
 > __________
 
+	And
 
 > <!>
 > 
@@ -67,7 +75,7 @@ And the current supported ABIs are : `arm64-v8a` and `x86_64`
 > 
 > g.co/ABH
 
-	- If this still does not solve your problem, please click on the X button in the upper right corner of the window.
+	If this still does not solve your problem, please click on the X button in the upper right corner of the window.
 
 ## Usage
 
