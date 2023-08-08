@@ -24,18 +24,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - sub_level: 41
-            os_patch_level: 2022-11
-          - sub_level: 74
-            os_patch_level: 2023-01
-          - sub_level: 78
-            os_patch_level: 2023-03
-          - sub_level: 94
-            os_patch_level: 2023-05
-          - sub_level: 104
-            os_patch_level: 2023-07
-          - sub_level: 119
-            os_patch_level: 2023-08
+          # Temporarily disabled for compiling via GitHub Actions
+          # - sub_level: 41
+          #   os_patch_level: 2022-11
+          # - sub_level: 74
+          #   os_patch_level: 2023-01
+          # - sub_level: 78
+          #   os_patch_level: 2023-03
+          # - sub_level: 94
+          #   os_patch_level: 2023-05
+          # - sub_level: 104
+          #   os_patch_level: 2023-07
+          # - sub_level: 119
+          #   os_patch_level: 2023-08
           - sub_level: 120
             os_patch_level: lts
     uses: ./.github/workflows/gki-kernel.yml

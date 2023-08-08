@@ -131,4 +131,3 @@ jobs:
       version_name: android12-5.10.${{ matrix.sub_level }}
       tag: android12-5.10
       patch_path: "5.10"
-      debug: ${{ inputs.debug }}

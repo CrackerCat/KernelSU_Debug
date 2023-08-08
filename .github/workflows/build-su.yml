@@ -7,7 +7,6 @@ on:
     paths: 
       - '.github/workflows/build-su.yml'
       - 'userspace/su/**'
-      - 'scripts/ksubot.py'
   pull_request:
     branches: [ "master" ]
     paths: 
