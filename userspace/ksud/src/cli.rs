@@ -6,7 +6,7 @@ use android_logger::Config;
 #[cfg(target_os = "android")]
 use log::LevelFilter;
 
-use crate::{apk_sign, debug, defs, event, module, utils};
+use crate::{apk_sign, debug, defs, event};
 
 /// KernelSU userspace cli
 #[derive(Parser, Debug)]
@@ -18,12 +18,6 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
-    /// Manage KernelSU modules
-    Module {
-        #[command(subcommand)]
-        command: Module,
-    },
-
     /// Trigger `post-fs-data` event
     PostFsData,
 
@@ -75,8 +69,6 @@ enum Debug {
     /// Get kernel version
     Version,
 
-    Mount,
-
     /// For testing
     Test,
 }
@@ -100,36 +92,6 @@ enum Sepolicy {
         /// sepolicy statements
         sepolicy: String,
     },
-}
-
-#[derive(clap::Subcommand, Debug)]
-enum Module {
-    /// Install module <ZIP>
-    Install {
-        /// module zip file path
-        zip: String,
-    },
-
-    /// Uninstall module <id>
-    Uninstall {
-        /// module id
-        id: String,
-    },
-
-    /// enable module <id>
-    Enable {
-        /// module id
-        id: String,
-    },
-
-    /// disable module <id>
-    Disable {
-        // module id
-        id: String,
-    },
-
-    /// list all modules
-    List,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -191,20 +153,6 @@ pub fn run() -> Result<()> {
         Commands::PostFsData => event::on_post_data_fs(),
         Commands::BootCompleted => event::on_boot_completed(),
 
-        Commands::Module { command } => {
-            #[cfg(any(target_os = "linux", target_os = "android"))]
-            {
-                utils::switch_mnt_ns(1)?;
-                utils::unshare_mnt_ns()?;
-            }
-            match command {
-                Module::Install { zip } => module::install_module(&zip),
-                Module::Uninstall { id } => module::uninstall_module(&id),
-                Module::Enable { id } => module::enable_module(&id),
-                Module::Disable { id } => module::disable_module(&id),
-                Module::List => module::list_modules(),
-            }
-        }
         Commands::Install => event::install(),
         Commands::Sepolicy { command } => match command {
             Sepolicy::Patch { sepolicy } => crate::sepolicy::live_patch(&sepolicy),
@@ -236,7 +184,6 @@ pub fn run() -> Result<()> {
                 Ok(())
             }
             Debug::Su => crate::ksu::grant_root(),
-            Debug::Mount => event::mount_systemlessly(defs::MODULE_DIR),
             Debug::Test => todo!(),
         },
     };

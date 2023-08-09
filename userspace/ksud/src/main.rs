@@ -6,7 +6,6 @@ mod defs;
 mod event;
 mod ksu;
 mod module;
-mod mount;
 mod profile;
 mod restorecon;
 mod sepolicy;

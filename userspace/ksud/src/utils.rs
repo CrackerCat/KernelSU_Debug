@@ -1,7 +1,7 @@
-use anyhow::{bail, Context, Error, Ok, Result};
+use anyhow::{bail, Error, Ok, Result};
 use std::{
-    fs::{create_dir_all, write, File, OpenOptions},
-    io::{ErrorKind::AlreadyExists, Write},
+    fs::{create_dir_all, write, OpenOptions},
+    io::Write,
     path::Path,
 };
 
@@ -9,30 +9,6 @@ use std::{
 use std::fs::{set_permissions, Permissions};
 #[cfg(unix)]
 use std::os::unix::prelude::PermissionsExt;
-
-pub fn ensure_clean_dir(dir: &str) -> Result<()> {
-    let path = Path::new(dir);
-    log::debug!("ensure_clean_dir: {}", path.display());
-    if path.exists() {
-        log::debug!("ensure_clean_dir: {} exists, remove it", path.display());
-        std::fs::remove_dir_all(path)?;
-    }
-    Ok(std::fs::create_dir_all(path)?)
-}
-
-pub fn ensure_file_exists<T: AsRef<Path>>(file: T) -> Result<()> {
-    match File::options().write(true).create_new(true).open(&file) {
-        std::result::Result::Ok(_) => Ok(()),
-        Err(err) => {
-            if err.kind() == AlreadyExists && file.as_ref().is_file() {
-                Ok(())
-            } else {
-                Err(Error::from(err))
-                    .with_context(|| format!("{} is not a regular file", file.as_ref().display()))
-            }
-        }
-    }
-}
 
 pub fn ensure_dir_exists<T: AsRef<Path>>(dir: T) -> Result<()> {
     let result = create_dir_all(&dir).map_err(Error::from);
@@ -89,13 +65,6 @@ pub fn is_safe_mode() -> bool {
     safemode
 }
 
-pub fn get_zip_uncompressed_size(zip_path: &str) -> Result<u64> {
-    let mut zip = zip::ZipArchive::new(std::fs::File::open(zip_path)?)?;
-    let total: u64 = (0..zip.len())
-        .map(|i| zip.by_index(i).unwrap().size())
-        .sum();
-    Ok(total)
-}
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn switch_mnt_ns(pid: i32) -> Result<()> {
@@ -154,8 +123,4 @@ pub fn umask(mask: u32) {
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
 pub fn umask(_mask: u32) {
     unimplemented!("umask is not supported on this platform")
-}
-
-pub fn has_magisk() -> bool {
-    which::which("magisk").is_ok()
 }
