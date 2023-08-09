@@ -7,14 +7,17 @@ A Kernel based root solution for Android devices. Modified for debugging.
 ## Features
 
 1. Kernel-based `su` and root access management.
-2. ~Module system based on overlayfs.~ (Remove soon)
-3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
+2. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage.
 
-
-4. Remove the unnecessary manager signature validation, only keep package name validation as basic security. Now you can modify the manager as much as you want.
-5. Always allow adb shell root.
-6. Set SELinux Permissive by default for **highest privileges**.
-7. Allow all APPs root, only available on Debug variant.
+3. Remove redundant module functions, to make the root access management cleaner. [1]
+4. Remove the unnecessary manager signature validation, only keep package name validation as basic security. Now you can modify the manager as much as you want. [2]
+5. Set SELinux Permissive by default for **highest privileges**. [3]
+6. Disabled the seccomp **non-security** Privilege Escalation, even if SELinux is set to Permissive on boot. [3]
+7. Forced spoofing of SELinux state to Enforcing, even if it was actually Permissive, used to spoof authentication through Play Integrity.  [3]
+8. Always allow adb shell root. [4]
+9. Allow all APPs root, same as Magisk's auto response feature.
+10. `init.d` support，ksud will parse or execute <stage>.sh/system.prop/sepolicy.rule under `/data/ksu/common`.
+11. Allow user to modify the target manager package name via the cli command.
 
 ## Compatibility State
 
@@ -30,21 +33,22 @@ And the current supported ABIs are : `arm64-v8a` and `x86_64`
 
 ## To-Dos
 
-- Drop redundant modules feature
 - Root access authorization dialog
-- Install KernelSU as kernel module
 - Allow modify manager package name in manager
 - Allow enable SELinux Enforcing in manager
+- Allow disable seccomp in manager
+- Allow disable SELinux Enforcing proof in manager
+- Install KernelSU as kernel module
 
 ## Workaround
 
-- Restricting users from modifying the distribution manager in root access tools is pointless, and defeats the purpose of unlocking and rooting devices. It is enough to keep only the package name validation as a basic security to keep the manager authorization in a first-installed-first-served state.
+1. KernelSU **SHOULD ONLY** provide root access related features, module features are redundant and poorly implemented for compatibility. So drop the redundant modules feature (but keep boot stage scripts) to keep it clean and improves runtime performance.
 
-- If you only got the root access, in some cases you will still be prevented by the Enforcing SELinux policy. The only way to do this is to disable SELinux (not allowed in Android) or set it to Permissive. So we believe that setting SELinux to Permissive mode (ROOT + Permissive) is the only way to really get the highest privileges on Android device. Google doesn't consider automatically disabling seccomp after setting SELinux Permissive to be a security issue, so we don't care too.
+2. Restricting users from modifying the distribution manager in root access tools is pointless, and defeats the purpose of unlocking and rooting devices. Users should be able to verify that the software they are installing is trustworthy, otherwise any security measures are meaningless. It's enough to keep only the package name verification in the kernel as a basic security check, and leave the signature verification to the Android's PackageManager, which puts the manager's license in a first-install-first-out state. What? Core patch? Why do I need to consider users installing untrusted software on their own?
 
-- KernelSU **SHOULD ONLY** provide root access related features, module features are redundant and poorly implemented for compatibility. So drop the redundant modules feature (but keep boot stage scripts) to keep it clean and improves runtime performance.
+3. If you only got the root access, in some cases you will still be prevented by the Enforcing SELinux policy. The only way to do this is to disable SELinux (not allowed in Android) or set it to Permissive. So we believe that setting SELinux to Permissive mode (ROOT + Permissive) is the only way to really get the highest privileges on Android device. Google doesn't consider automatically disabling seccomp after setting SELinux Permissive to be a security issue, so we don't care too.
 
-- KernelSU does not provide a dialog for authorization, which is annoying. Allow adb shell root by default preserves both relative application security and the convenience of terminal debugging. Similarly, root privileges are provided for all applications by default for debugging purposes only, but are provided separately for Debug variant due to security risks.
+4. KernelSU does not provide a dialog for authorization, which is annoying. Adb shell is one of the core components of Android, there is no need to confirm its security. Trusting and authorizing it preserves relative application security as well as convenient user operation for terminal debugging.
 
 
 	If you believe that the above features undermine the security of a device that has been flashed with custom firmware, please review the BootLoader's unlock warning first:
