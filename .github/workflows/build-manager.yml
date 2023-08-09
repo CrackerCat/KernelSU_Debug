@@ -81,10 +81,10 @@ jobs:
 
       - name: Copy ksud to app jniLibs
         run: |
-          mkdir -p app/src/master/jniLibs/arm64-v8a
-          mkdir -p app/src/master/jniLibs/x86_64
-          cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/master/jniLibs/arm64-v8a/libksud.so
-          cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/master/jniLibs/x86_64/libksud.so
+          mkdir -p app/src/main/jniLibs/arm64-v8a
+          mkdir -p app/src/main/jniLibs/x86_64
+          cp -f ../aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+          cp -f ../x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud.so
 
       - name: Build with Gradle
         run: |
