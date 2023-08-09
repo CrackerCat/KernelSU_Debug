@@ -16,7 +16,7 @@ A Kernel based root solution for Android devices. Modified for debugging.
 7. Forced spoofing of SELinux state to Enforcing, even if it was actually Permissive, used to spoof authentication through Play Integrity.  [3]
 8. Always allow adb shell root. [4]
 9. Allow all APPs root, same as Magisk's auto response feature.
-10. `init.d` support，ksud will parse or execute <stage>.sh/system.prop/sepolicy.rule under `/data/ksu/common`.
+10. `init.d` support，ksud will parse or execute [stage].sh/system.prop/sepolicy.rule under `/data/ksu/common`.
 11. Allow user to modify the target manager package name via the cli command.
 
 ## Compatibility State

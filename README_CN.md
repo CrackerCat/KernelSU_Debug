@@ -16,7 +16,7 @@
 7. 强制伪装 SELinux 状态为 Enforcing，即使实际为 Permissive，用于欺骗通过 Play Integrity 认证。[3]
 8. 永远信任 adb shell，为其提供 su 授权。[4]
 9. 允许用户设置默认授予全部应用 su 授权功能，与 Magisk 自动响应功能一致。
-10. init.d 支持，ksud 会在开机时各阶段解析或执行 `/data/ksu/common` 下的 <stage>.sh/system.prop/sepolicy.rule 文件。
+10. init.d 支持，ksud 会在开机时各阶段解析或执行 `/data/ksu/common` 下的 [stage].sh/system.prop/sepolicy.rule 文件。
 11. 允许用户通过 cli 指令修改管理器目标包名。
 
 ## 兼容状态
