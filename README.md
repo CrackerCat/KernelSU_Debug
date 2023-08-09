@@ -2,7 +2,7 @@
 
 # KernelSU Debug
 
-A Kernel based root solution for Android devices. Modified for debugging.
+A Kernel based root solution for Android devices. Modified for development debugging.
 
 ## Features
 
@@ -21,11 +21,11 @@ A Kernel based root solution for Android devices. Modified for debugging.
 
 ## Compatibility State
 
-KernelSU officially supports Android GKI 2.0 devices(with kernel 5.10+), old kernels(4.14+) is also compatible, but you need to build kernel yourself.
+KernelSU officially supports Android GKI 2.0 devices(with kernel 5.10+), old kernels(4.14+) are also compatible, but you need to build the kernel yourself.
 
-WSA, ChromeOS and containter-based Android can also work with KernelSU integrated.
+WSA, ChromeOS and container-based Android can also work with KernelSU integrated.
 
-And the current supported ABIs are : `arm64-v8a` and `x86_64`
+And the current supported ABIs are: `arm64-v8a` and `x86_64`
 
 ## Discussion
 
@@ -88,8 +88,8 @@ And the current supported ABIs are : `arm64-v8a` and `x86_64`
 
 ## License
 
-- Files under `kernel` directory are [GPL-2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-- All other parts except `kernel` directory are [GPL-3](https://www.gnu.org/licenses/gpl-3.0.html)
+- Files under the `kernel` directory are [GPL-2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+- All other parts except the `kernel` directory are [GPL-3](https://www.gnu.org/licenses/gpl-3.0.html)
 
 ## Credits
 
