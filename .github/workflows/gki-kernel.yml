@@ -86,8 +86,6 @@ jobs:
 
       - name: Setup kernel source
         run: |
-          echo "Free space:"
-          df -h
           cd $GITHUB_WORKSPACE
           sudo apt-get install repo -y
           mkdir android-kernel && cd android-kernel
@@ -101,10 +99,7 @@ jobs:
           fi
           repo --version
           repo --trace sync -q -c -j$(nproc --all) --no-tags
-          if [ -d prebuilts/clang/host/linux-x86 ] && [ -f common/build.config.constants ]; then
-            ls -d prebuilts/clang/host/linux-x86/clang-r* | grep -v $(sed -n 's/^CLANG_VERSION=//p' common/build.config.constants)
-          fi
-          df -h
+          rm -rf .repo
 
       - name: Setup KernelSU
         env:
