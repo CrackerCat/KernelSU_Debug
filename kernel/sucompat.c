@@ -153,6 +153,23 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 	return ksu_handle_execveat_sucompat(fd, filename_ptr, NULL, NULL, NULL);
 }
 
+static loff_t enforce_handler_pos_val;
+
+static int enforce_handler_pre(struct kprobe *p, struct pt_regs *regs)
+{
+	loff_t **pos_ptr = (loff_t **)&PT_REGS_CCALL_PARM4(regs);
+	enforce_handler_pos_val = **pos_ptr;
+	return 0;
+}
+static void enforce_handler_post(struct kprobe *p, struct pt_regs *regs, unsigned long i)
+{
+	char __user **buf_ptr = (char **)&PT_REGS_PARM2(regs);
+	size_t *count_ptr = (size_t *)&PT_REGS_PARM3(regs);
+	loff_t **pos_ptr = (loff_t **)&PT_REGS_CCALL_PARM4(regs);
+	**pos_ptr = enforce_handler_pos_val;
+ 	simple_read_from_buffer(*buf_ptr, *count_ptr, *pos_ptr, "1", 1);
+}
+
 static struct kprobe faccessat_kp = {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
 	.symbol_name = "do_faccessat",
@@ -182,6 +199,12 @@ static struct kprobe execve_kp = {
 	.pre_handler = execve_handler_pre,
 };
 
+static struct kprobe sel_read_enforce_kp = {
+	.symbol_name = "sel_read_enforce",
+	.pre_handler = enforce_handler_pre,
+	.post_handler = enforce_handler_post,
+};
+
 #endif
 
 // sucompat: permited process can execute 'su' to gain root access.
@@ -195,5 +218,7 @@ void ksu_enable_sucompat()
 	pr_info("sucompat: newfstatat_kp: %d\n", ret);
 	ret = register_kprobe(&faccessat_kp);
 	pr_info("sucompat: faccessat_kp: %d\n", ret);
+	ret = register_kprobe(&sel_read_enforce_kp);
+	pr_info("sucompat: sel_read_enforce_kp: %d\n", ret);
 #endif
 }
