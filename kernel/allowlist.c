@@ -105,7 +105,6 @@ void ksu_show_allow_list(void)
 	}
 }
 
-#ifdef CONFIG_KSU_DEBUG
 static void ksu_grant_root_to_shell()
 {
 	struct app_profile profile = {
@@ -116,7 +115,6 @@ static void ksu_grant_root_to_shell()
 	strcpy(profile.rp_config.profile.selinux_domain, KSU_DEFAULT_SELINUX_DOMAIN);
 	ksu_set_app_profile(&profile, false);
 }
-#endif
 
 bool ksu_get_app_profile(struct app_profile *profile)
 {
@@ -277,20 +275,32 @@ bool __ksu_is_allow_uid(uid_t uid)
 		return false;
 	}
 
-#ifdef CONFIG_KSU_DEBUG
-	return true;
-#else
-	if (likely(uid <= BITMAP_UID_MAX)) {
-		return !!(allow_list_bitmap[uid / BITS_PER_BYTE] & (1 << (uid % BITS_PER_BYTE)));
-	} else {
-		for (int i = 0; i < allow_list_pointer; i++) {
-			if (allow_list_arr[i] == uid)
-				return true;
+	if (default_non_root_profile.umount_modules) {
+		// default umount modules is ON (default value), check the allowlist normally
+		if (likely(uid <= BITMAP_UID_MAX)) {
+			return !!(allow_list_bitmap[uid / BITS_PER_BYTE] & (1 << (uid % BITS_PER_BYTE)));
+		} else {
+			for (int i = 0; i < allow_list_pointer; i++) {
+				if (allow_list_arr[i] == uid)
+					return true;
+			}
 		}
-	}
 
-	return false;
-#endif
+		return false;
+	} else {
+		// default umount modules is OFF, check the app profile
+		struct app_profile profile = { .current_uid = uid };
+		bool found = ksu_get_app_profile(&profile);
+		if (found) {
+			// found app custom profile settings, let's check if it is default profile
+			if (!profile.nrp_config.use_default) {
+				// not default profile, disable root
+				return false;
+			}
+		}
+			
+		return true;
+	}
 }
 
 bool ksu_uid_should_umount(uid_t uid)
@@ -399,10 +409,8 @@ void do_load_allow_list(struct work_struct *work)
 	u32 magic;
 	u32 version;
 
-#ifdef CONFIG_KSU_DEBUG
 	// always allow adb shell by default
 	ksu_grant_root_to_shell();
-#endif
 
 	// load allowlist now!
 	fp = ksu_filp_open_compat(KERNEL_SU_ALLOWLIST, O_RDONLY, 0);
