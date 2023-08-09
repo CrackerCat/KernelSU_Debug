@@ -1,18 +1,10 @@
 #[allow(clippy::wildcard_imports)]
-use crate::utils::*;
-use crate::{
-    assets, defs,
-    sepolicy,
-};
+use crate::{assets, defs, sepolicy, utils::*};
 
 use anyhow::{anyhow, Context, Result};
 use is_executable::is_executable;
 use log::{info, warn};
-use std::{
-    env::var as env_var,
-    path::Path,
-    process::Command
-};
+use std::{env::var as env_var, path::Path, process::Command};
 
 #[cfg(unix)]
 use std::os::unix::process::CommandExt;
@@ -77,7 +69,7 @@ pub fn exec_post_fs_data() -> Result<()> {
         return Ok(());
     }
 
-    return exec_script(&post_fs_data, true)
+    exec_script(&post_fs_data, true)
 }
 
 pub fn exec_common_scripts(dir: &str, wait: bool) -> Result<()> {
@@ -109,7 +101,7 @@ pub fn exec_stage_scripts(stage: &str) -> Result<()> {
         return Ok(());
     }
 
-    return exec_script(&service, false)
+    exec_script(&service, false)
 }
 
 pub fn load_system_prop() -> Result<()> {

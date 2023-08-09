@@ -65,7 +65,6 @@ pub fn is_safe_mode() -> bool {
     safemode
 }
 
-
 #[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn switch_mnt_ns(pid: i32) -> Result<()> {
     use anyhow::ensure;

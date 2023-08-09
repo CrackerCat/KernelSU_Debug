@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use log::{info, warn};
-use std::{path::PathBuf, path::Path};
+use std::{path::Path, path::PathBuf};
 
 use crate::{
     assets, defs, restorecon,

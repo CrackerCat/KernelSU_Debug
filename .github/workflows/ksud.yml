@@ -1,4 +1,4 @@
-name: Build ksud
+name: ksud
 
 on:
   workflow_call:
