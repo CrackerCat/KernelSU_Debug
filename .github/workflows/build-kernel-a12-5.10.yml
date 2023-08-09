@@ -130,4 +130,5 @@ jobs:
       version: android12-5.10
       version_name: android12-5.10.${{ matrix.sub_level }}
       tag: android12-5.10
+      os_patch_level: mainline
       patch_path: "5.10"
